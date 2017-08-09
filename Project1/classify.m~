@@ -1,0 +1,44 @@
+%%%%%%%%%%
+%% Case 3
+load('iris.mat');
+setosa = iris.features(1:50,:);
+versicolour = iris.features(51:100,:);
+R = zeros(4,1);
+Monte_Carlo = 200;
+%% For most efficient feature 
+%% Monte Carlo Simulation is applied.
+for k = 1:Monte_Carlo
+%% Traninng and Test Set is separated.
+p = randperm(50);
+K = 30;
+L = 50 - K;
+training = p(1:K);
+test = p(K+1:50);
+    %% For each feature parameter estimation is done.
+    for i=1:4
+        %%
+        [u1,q1] = estimator(setosa(training,i)); 
+        [u2,q2] = estimator(versicolour(training,i));
+        t_set = [setosa(test,i)',versicolour(test,i)'];
+        %% Relative Likelihood is calculated
+        %% and compared to classidy.
+        p_setosa = normpdf(t_set,u1,q1);
+        p_versicolour = normpdf(t_set,u2,q2);
+        %% Setosa is Labeled as
+        results = p_setosa < p_versicolour;
+        true =[zeros(1,L),ones(1,L)];
+        compare = true - results;
+        R(i) = R(i) + length(find(compare == 0)) /(2*L);
+    end
+end
+R =  R / Monte_Carlo;
+figure;
+plot(1,R(1),'O','markersize',10);
+hold on;
+plot(2,R(2),'O','markersize',10);
+hold on;
+plot(3,R(3),'O','markersize',10);
+hold on;
+plot(4,R(4),'O','markersize',10);
+hold on;
+legend('SepalLength','SepalWidth','PetalLength','PetalWidth');

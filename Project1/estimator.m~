@@ -1,0 +1,6 @@
+function [u ,q] = estimator(x)
+N = length(x);
+u = sum(x)/N;
+q = sum((x - u).^2)/(N);
+q2 = sum(x.^2-u)
+end
